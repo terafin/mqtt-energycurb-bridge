@@ -8,7 +8,7 @@
         "url": "https://github.com/terafin/mqtt-energycurb-bridge"
     },
     "scripts": {
-        "start": "node mqtt-aleenergycurbxa-bridge.js"
+        "start": "node mqtt-energycurb-bridge.js"
     },
     "dependencies": {
         "request": "^2.81.0",
