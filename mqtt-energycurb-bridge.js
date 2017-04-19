@@ -13,7 +13,7 @@ username = process.env.ENERGY_CURB_USER
 password = process.env.ENERGY_CURB_PASS
 
 // Set up modules
-logging.set_enabled(true)
+logging.set_enabled(false)
 
 
 // Setup MQTT
