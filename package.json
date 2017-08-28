@@ -11,10 +11,15 @@
         "start": "node mqtt-energycurb-bridge.js"
     },
     "dependencies": {
-        "request": "^2.81.0",
-        "mqtt": "^2.6.2",
         "express": "^4.15.2",
-        "url": "^0.11.0"
+        "lodash": "^4.17.4",
+        "mqtt": "^2.6.2",
+        "request": "^2.81.0",
+        "socket.io-client": "^2.0.3",
+        "url": "^0.11.0",
+        "winston": "^2.3.1",
+        "winston-splunk-httplogger": "^1.2.2",
+        "xmlhttprequest": "^1.8.0"
     },
     "engines": {
         "node": ">=4"
