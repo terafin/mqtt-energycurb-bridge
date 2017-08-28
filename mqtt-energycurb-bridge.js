@@ -1,12 +1,12 @@
 // Requirements
 const mqtt = require('mqtt')
+const _ = require('lodash')
 
 const logging = require('./homeautomation-js-lib/logging.js')
-const mqtt_helpers = require('./homeautomation-js-lib/mqtt_helpers.js')
-const energycurb = require('./homeautomation-js-lib/energycurb.js')
-
+const health = require('./homeautomation-js-lib/health.js')
 const curb = require('./curb.js')
 
+require('./homeautomation-js-lib/mqtt_helpers.js')
 
 // Config
 const dst_host = process.env.MQTT_HOST
@@ -39,8 +39,44 @@ var userInfo = {}
 
 userInfo.username = username
 userInfo.password = password
-userInfo.curb_client_id = 'R7LHLp5rRr6ktb9hhXfMaILsjwmIinKa'
-userInfo.curb_client_secret = 'pcxoDsqCN7o_ny5KmEKJ2ci0gL5qqOSfxnzF6JIvwsfRsUVXFdD-DUc40kkhHAZR'
+
+if (_.isNil(topic_prefix)) {
+    logging.warn('ENERGY_CURB_PREFIX not set, not starting')
+    process.abort()
+}
+
+var connectedEvent = function() {
+    health.healthyEvent()
+}
+
+var disconnectedEvent = function() {
+    health.unhealthyEvent()
+}
+
+// Setup MQTT
+var client = mqtt.setupClient(connectedEvent, disconnectedEvent)
+
+var refreshedToken = function(token) {
+    token
+    // console.log('token updated: ' + token)
+}
+
+var liveData = function(id, label, wattage, isProduction, isMain, isOther) {
+    isOther
+    health.healthyEvent()
+    var topic = topic_prefix + '/' + _.snakeCase(label)
+    client.smartPublish(topic, '' + wattage)
+        // console.log('topic: ' + topic + '   watts: ' + wattage + ' isOther: ' + isOther)
+}
+
+curb.connect(userInfo, refreshedToken, liveData)
 
 
-curb.connect(userInfo, st, saveCurbToken);
+const healthCheckPort = process.env.HEALTH_CHECK_PORT
+const healthCheckTime = process.env.HEALTH_CHECK_TIME
+const healthCheckURL = process.env.HEALTH_CHECK_URL
+
+if (healthCheckPort !== null && healthCheckTime !== null && healthCheckURL !== null &&
+    healthCheckPort !== undefined && healthCheckTime !== undefined && healthCheckURL !== undefined) {
+    health.startHealthChecks(healthCheckURL, healthCheckPort, healthCheckTime)
+}

@@ -1,20 +1,26 @@
-var curbAccessToken
-var curbRefreshToken
+const _ = require('lodash')
+const logging = require('./homeautomation-js-lib/logging.js')
 
-var clientId
-var clientSecret
+var curbAccessToken = null
+var curbRefreshToken = null
 
-var locations
-var smartThings
+var clientId = null
+var clientSecret = null
+
+var locations = null
+var liveDataCallback = null
 
 var request = require('request')
 var io = require('socket.io-client')
 
-function getCurbToken(userInfo, st, refreshTokenCb) {
-    console.log('Logging in to Curb')
-    smartThings = st
+function getCurbToken(userInfo, refreshTokenCb, liveDataCb) {
+    logging.log('Logging in to Curb')
     clientId = userInfo.curb_client_id
     clientSecret = userInfo.curb_client_secret
+    liveDataCallback = liveDataCb
+
+    userInfo.curb_client_id = 'R7LHLp5rRr6ktb9hhXfMaILsjwmIinKa'
+    userInfo.curb_client_secret = 'pcxoDsqCN7o_ny5KmEKJ2ci0gL5qqOSfxnzF6JIvwsfRsUVXFdD-DUc40kkhHAZR'
 
     request.post({
             url: 'https://energycurb.auth0.com/oauth/token',
@@ -30,13 +36,13 @@ function getCurbToken(userInfo, st, refreshTokenCb) {
         },
         function(err, res, body) {
             if (res && res.statusCode == 200) {
-                //console.log("Response: " + body);
+                //logging.log("Response: " + body);
 
                 curbAccessToken = JSON.parse(body).access_token
                 curbRefreshToken = JSON.parse(body).refresh_token
 
-                //console.log("Curb Access Token: " + curbAccessToken);
-                //console.log("Curb Refresh Token: " + curbRefreshToken);
+                //logging.log("Curb Access Token: " + curbAccessToken);
+                //logging.log("Curb Refresh Token: " + curbRefreshToken);
 
                 refreshTokenCb(curbRefreshToken)
 
@@ -44,7 +50,7 @@ function getCurbToken(userInfo, st, refreshTokenCb) {
 
                 getCurbLocations()
             } else {
-                console.log('Something Went Wrong while submitting form data to Curb ' + res.statusCode + ': ' + body)
+                logging.log('Something Went Wrong while submitting form data to Curb ' + res.statusCode + ': ' + body)
                 if (err) throw err
             }
         })
@@ -53,7 +59,7 @@ function getCurbToken(userInfo, st, refreshTokenCb) {
 
 
 function refreshToken(refreshCompleteCb) {
-    console.log('Refreshing Curb auth')
+    logging.log('Refreshing Curb auth')
 
     request.post({
             url: 'https://energycurb.auth0.com/oauth/token',
@@ -66,45 +72,42 @@ function refreshToken(refreshCompleteCb) {
         },
         function(err, res, body) {
             if (res && res.statusCode == 200) {
-                //console.log("Response: " + body);
+                //logging.log("Response: " + body);
                 curbAccessToken = JSON.parse(body).access_token
 
-                //console.log("Curb Access Token: " + curbAccessToken);
+                //logging.log("Curb Access Token: " + curbAccessToken);
                 refreshCompleteCb()
             } else {
-                console.log('Something Went Wrong while getting refresh token ' + res.statusCode + ': ' + body)
+                logging.log('Something Went Wrong while getting refresh token ' + res.statusCode + ': ' + body)
                 if (err) throw err
             }
         })
 }
 
-function useCurbToken(token, id, secret, st) {
+function useCurbToken(token, id, secret) {
     curbRefreshToken = token
     clientId = id
     clientSecret = secret
-    smartThings = st
 
     refreshToken(getCurbLocations)
     setInterval(function() { refreshToken(function() {}) }, 20 * 60 * 60 * 1000)
 }
 
 function getCurbLocations() {
-    console.log('Requesting Curb location info')
+    logging.log('Requesting Curb location info')
 
     request
         .get('https://app.energycurb.com/api/locations',
             function(error, response, body) {
                 if (response && response.statusCode == 200) {
-                    console.log('Curb Location Info: ' + body)
+                    logging.log('Curb Location Info: ' + body)
                     locations = JSON.parse(body)
 
-                    getHistoricalUsage()
-                    setInterval(function() { getHistoricalUsage() }, 5 * 60 * 1000)
-                    setTimeout(function() { connectToLiveData() }, 10 * 1000)
+                    connectToLiveData()
                 } else {
-                    console.log('Something went wrong getting location info')
-                    console.log(response.statusCode)
-                    console.log(error)
+                    logging.log('Something went wrong getting location info')
+                    logging.log(response.statusCode)
+                    logging.log(error)
                 }
             })
         .auth(null, null, true, curbAccessToken)
@@ -118,42 +121,30 @@ function connectToLiveData() {
     })
 
     socket.on('connect', function() {
-        console.log('Connected to socket.io, authenticating')
-        socket.emit('authenticate', { token: curbAccessToken }, function(data) { console.log('Auth Ack: ' + data) })
+        logging.log('Connected to socket.io, authenticating')
+        socket.emit('authenticate', { token: curbAccessToken }, function(data) { logging.log('Auth Ack: ' + data) })
     })
     socket.on('authorized',
         function() {
-            console.log('Authorized for socket.io, suscribing to live data')
+            logging.log('Authorized for socket.io, suscribing to live data')
             socket.emit('subscribe', locations[0].id)
         })
     socket.on('data',
             function(data) {
-                json = JSON.stringify(data)
-                    //console.log("Got Live Data: " + json);
-                smartThings.send('data', json)
+                // json = JSON.stringify(data)
+                // logging.log('Got Live Data: ' + json)
+
+                if (!_.isNil(liveDataCallback)) {
+                    const circuits = data.circuits
+                    circuits.forEach(function(circuit) {
+                        liveDataCallback(circuit.id, circuit.label, circuit.w, circuit.production, circuit.main, circuit.other)
+                    }, this)
+                }
+                //smartThings.send('data', json)
             })
         //socket.on('disconnect', connectToLiveData);
 }
 
-function getHistoricalUsage() {
-    var url = 'https://app.energycurb.com/api/historical/' + locations[0].id + '/24h/5m'
-
-    //console.log("Getting historical data: " + url);
-
-    request
-        .get(url,
-            function(error, response, body) {
-                if (response && response.statusCode == 200) {
-                    //console.log("Got historical data: " + body);
-                    smartThings.send('historical', body)
-                } else {
-                    console.log('Something went wrong getting historical data')
-                    if (response) { console.log(response.statusCode) }
-                    if (error) { console.log(error) }
-                }
-            })
-        .auth(null, null, true, curbAccessToken)
-}
 
 module.exports.connect = getCurbToken
 module.exports.reconnect = useCurbToken
