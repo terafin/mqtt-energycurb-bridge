@@ -35,7 +35,7 @@ function getCurbToken(userInfo, refreshTokenCb, liveDataCb) {
             }
         },
         function(err, res, body) {
-            if (res && res.statusCode == 200) {
+            if (!_.isNil(res) && res.statusCode == 200) {
                 //logging.log("Response: " + body);
 
                 curbAccessToken = JSON.parse(body).access_token
@@ -71,7 +71,7 @@ function refreshToken(refreshCompleteCb) {
             }
         },
         function(err, res, body) {
-            if (res && res.statusCode == 200) {
+            if (!_.isNil(res) && res.statusCode == 200) {
                 //logging.log("Response: " + body);
                 curbAccessToken = JSON.parse(body).access_token
 
@@ -99,7 +99,7 @@ function getCurbLocations() {
     request
         .get('https://app.energycurb.com/api/locations',
             function(error, response, body) {
-                if (response && response.statusCode == 200) {
+                if (!_.isNil(response) && response.statusCode == 200) {
                     logging.log('Curb Location Info: ' + body)
                     locations = JSON.parse(body)
 

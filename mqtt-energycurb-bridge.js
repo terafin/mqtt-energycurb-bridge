@@ -57,12 +57,10 @@ var disconnectedEvent = function() {
 var client = mqtt.setupClient(connectedEvent, disconnectedEvent)
 
 var refreshedToken = function(token) {
-    token
-    // console.log('token updated: ' + token)
+    console.log('token updated: ' + token)
 }
 
 var liveData = function(id, label, wattage, isProduction, isMain, isOther) {
-    isOther
     health.healthyEvent()
     var topic = topic_prefix + '/' + _.snakeCase(label)
     client.smartPublish(topic, '' + wattage)
