@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const logging = require('./homeautomation-js-lib/logging.js')
+const logging = require('homeautomation-js-lib/logging.js')
 
 var curbAccessToken = null
 var curbRefreshToken = null

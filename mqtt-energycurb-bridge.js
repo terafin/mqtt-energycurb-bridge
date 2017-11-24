@@ -2,11 +2,11 @@
 const mqtt = require('mqtt')
 const _ = require('lodash')
 
-const logging = require('./homeautomation-js-lib/logging.js')
-const health = require('./homeautomation-js-lib/health.js')
+const logging = require('homeautomation-js-lib/logging.js')
+const health = require('homeautomation-js-lib/health.js')
 const curb = require('./curb.js')
 
-require('./homeautomation-js-lib/mqtt_helpers.js')
+require('homeautomation-js-lib/mqtt_helpers.js')
 
 // Config
 const dst_host = process.env.MQTT_HOST
