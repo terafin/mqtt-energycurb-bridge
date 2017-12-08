@@ -21,17 +21,17 @@ const dst_client = mqtt.connect(dst_host)
 // MQTT Observation
 
 dst_client.on('connect', () => {
-    logging.log('Reconnecting...\n')
+    logging.info('Reconnecting...\n')
 })
 
 dst_client.on('disconnect', () => {
-    logging.log('Reconnecting...\n')
+    logging.info('Reconnecting...\n')
     dst_client.connect(dst_host)
 })
 
 // energycurb.set_user_pass(username, password)
 // energycurb.set_client_callback(function(topic, message) {
-//     logging.log("topic: " + topic + "   message: " + message)
+//     logging.info("topic: " + topic + "   message: " + message)
 //     mqtt_helpers.publish(dst_client, topic, message)
 // })
 

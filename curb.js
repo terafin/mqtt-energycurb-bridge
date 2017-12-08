@@ -14,7 +14,7 @@ var request = require('request')
 var io = require('socket.io-client')
 
 function getCurbToken(userInfo, refreshTokenCb, liveDataCb) {
-    logging.log('Logging in to Curb')
+    logging.info('Logging in to Curb')
     clientId = userInfo.curb_client_id
     clientSecret = userInfo.curb_client_secret
     liveDataCallback = liveDataCb
@@ -36,13 +36,13 @@ function getCurbToken(userInfo, refreshTokenCb, liveDataCb) {
         },
         function(err, res, body) {
             if (!_.isNil(res) && res.statusCode == 200) {
-                //logging.log("Response: " + body);
+                //logging.info("Response: " + body);
 
                 curbAccessToken = JSON.parse(body).access_token
                 curbRefreshToken = JSON.parse(body).refresh_token
 
-                //logging.log("Curb Access Token: " + curbAccessToken);
-                //logging.log("Curb Refresh Token: " + curbRefreshToken);
+                //logging.info("Curb Access Token: " + curbAccessToken);
+                //logging.info("Curb Refresh Token: " + curbRefreshToken);
 
                 refreshTokenCb(curbRefreshToken)
 
@@ -50,7 +50,7 @@ function getCurbToken(userInfo, refreshTokenCb, liveDataCb) {
 
                 getCurbLocations()
             } else {
-                logging.log('Something Went Wrong while submitting form data to Curb ' + res.statusCode + ': ' + body)
+                logging.info('Something Went Wrong while submitting form data to Curb ' + res.statusCode + ': ' + body)
                 if (err) throw err
             }
         })
@@ -59,7 +59,7 @@ function getCurbToken(userInfo, refreshTokenCb, liveDataCb) {
 
 
 function refreshToken(refreshCompleteCb) {
-    logging.log('Refreshing Curb auth')
+    logging.info('Refreshing Curb auth')
 
     request.post({
             url: 'https://energycurb.auth0.com/oauth/token',
@@ -72,13 +72,13 @@ function refreshToken(refreshCompleteCb) {
         },
         function(err, res, body) {
             if (!_.isNil(res) && res.statusCode == 200) {
-                //logging.log("Response: " + body);
+                //logging.info("Response: " + body);
                 curbAccessToken = JSON.parse(body).access_token
 
-                //logging.log("Curb Access Token: " + curbAccessToken);
+                //logging.info("Curb Access Token: " + curbAccessToken);
                 refreshCompleteCb()
             } else {
-                logging.log('Something Went Wrong while getting refresh token ' + res.statusCode + ': ' + body)
+                logging.info('Something Went Wrong while getting refresh token ' + res.statusCode + ': ' + body)
                 if (err) throw err
             }
         })
@@ -94,20 +94,20 @@ function useCurbToken(token, id, secret) {
 }
 
 function getCurbLocations() {
-    logging.log('Requesting Curb location info')
+    logging.info('Requesting Curb location info')
 
     request
         .get('https://app.energycurb.com/api/locations',
             function(error, response, body) {
                 if (!_.isNil(response) && response.statusCode == 200) {
-                    logging.log('Curb Location Info: ' + body)
+                    logging.info('Curb Location Info: ' + body)
                     locations = JSON.parse(body)
 
                     connectToLiveData()
                 } else {
-                    logging.log('Something went wrong getting location info')
-                    logging.log(response.statusCode)
-                    logging.log(error)
+                    logging.info('Something went wrong getting location info')
+                    logging.info(response.statusCode)
+                    logging.info(error)
                 }
             })
         .auth(null, null, true, curbAccessToken)
@@ -121,18 +121,18 @@ function connectToLiveData() {
     })
 
     socket.on('connect', function() {
-        logging.log('Connected to socket.io, authenticating')
-        socket.emit('authenticate', { token: curbAccessToken }, function(data) { logging.log('Auth Ack: ' + data) })
+        logging.info('Connected to socket.io, authenticating')
+        socket.emit('authenticate', { token: curbAccessToken }, function(data) { logging.info('Auth Ack: ' + data) })
     })
     socket.on('authorized',
         function() {
-            logging.log('Authorized for socket.io, suscribing to live data')
+            logging.info('Authorized for socket.io, suscribing to live data')
             socket.emit('subscribe', locations[0].id)
         })
     socket.on('data',
             function(data) {
                 // json = JSON.stringify(data)
-                // logging.log('Got Live Data: ' + json)
+                // logging.info('Got Live Data: ' + json)
 
                 if (!_.isNil(liveDataCallback)) {
                     const circuits = data.circuits
