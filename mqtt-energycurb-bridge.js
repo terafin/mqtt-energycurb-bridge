@@ -68,13 +68,3 @@ var liveData = function(id, label, wattage, isProduction, isMain, isOther) {
 }
 
 curb.connect(userInfo, refreshedToken, liveData)
-
-
-const healthCheckPort = process.env.HEALTH_CHECK_PORT
-const healthCheckTime = process.env.HEALTH_CHECK_TIME
-const healthCheckURL = process.env.HEALTH_CHECK_URL
-
-if (healthCheckPort !== null && healthCheckTime !== null && healthCheckURL !== null &&
-    healthCheckPort !== undefined && healthCheckTime !== undefined && healthCheckURL !== undefined) {
-    health.startHealthChecks(healthCheckURL, healthCheckPort, healthCheckTime)
-}
