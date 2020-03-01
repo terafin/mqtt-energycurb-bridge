@@ -1,23 +1,27 @@
 {
-    "name": "mqtt-energycurb-bridge",
-    "version": "0.0.1",
-    "description": "Bridge energycurb via HTTP to and from MQTT",
-    "license": "MIT",
-    "main": "mqtt-energycurb-bridge.js",
-    "repository": {
-        "url": "https://github.com/terafin/mqtt-energycurb-bridge"
-    },
-    "scripts": {
-        "start": "node mqtt-energycurb-bridge.js"
-    },
-    "dependencies": {
-        "homeautomation-js-lib": "git://github.com/terafin/homeautomation-js-lib.git",
-        "lodash": "^4.17.4",
-        "mqtt": "^2.15.0",
-        "request": "^2.81.0",
-        "socket.io-client": "^2.0.3"
-    },
-    "engines": {
-        "node": ">=4"
-    }
+  "name": "mqtt-energycurb-bridge",
+  "version": "0.0.1",
+  "description": "Bridge energycurb via HTTP to and from MQTT",
+  "license": "MIT",
+  "main": "mqtt-energycurb-bridge.js",
+  "repository": {
+    "url": "https://github.com/terafin/mqtt-energycurb-bridge"
+  },
+  "scripts": {
+    "start": "node mqtt-energycurb-bridge.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "dependencies": {
+    "homeautomation-js-lib": "git://github.com/terafin/homeautomation-js-lib.git",
+    "lodash": "^4.17.12",
+    "mqtt": "^2.15.0",
+    "request": "^2.81.0",
+    "socket.io-client": "^2.0.3",
+    "snyk": "^1.297.3"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "snyk": true
 }
