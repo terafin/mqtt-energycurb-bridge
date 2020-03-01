@@ -1,0 +1,55 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - socket.io-client > debug:
+        patched: '2020-03-01T19:06:33.205Z'
+    - socket.io-client > engine.io-client > debug:
+        patched: '2020-03-01T19:06:33.205Z'
+    - socket.io-client > socket.io-parser > debug:
+        patched: '2020-03-01T19:06:33.205Z'
+  'npm:extend:20180424':
+    - request > extend:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > request > extend:
+        patched: '2020-03-01T19:06:33.205Z'
+    - mqtt > help-me > glob-stream > extend:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > mqtt > help-me > glob-stream > extend:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > extend:
+        patched: '2020-03-01T19:06:33.205Z'
+  'npm:hoek:20180212':
+    - request > hawk > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - request > hawk > boom > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - request > hawk > sntp > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > request > hawk > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > request > hawk > boom > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - request > hawk > cryptiles > boom > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > request > hawk > sntp > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > request > hawk > cryptiles > boom > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > hawk > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > hawk > boom > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > hawk > sntp > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > hawk > cryptiles > boom > hoek:
+        patched: '2020-03-01T19:06:33.205Z'
+  'npm:stringstream:20180511':
+    - request > stringstream:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > request > stringstream:
+        patched: '2020-03-01T19:06:33.205Z'
+    - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > stringstream:
+        patched: '2020-03-01T19:06:33.205Z'
