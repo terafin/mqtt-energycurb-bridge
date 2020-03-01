@@ -10,6 +10,8 @@ patch:
         patched: '2020-03-01T19:06:33.205Z'
     - socket.io-client > socket.io-parser > debug:
         patched: '2020-03-01T19:06:33.205Z'
+    - snyk > proxy-agent > pac-proxy-agent > get-uri > debug:
+        patched: '2020-03-01T19:09:01.082Z'
   'npm:extend:20180424':
     - request > extend:
         patched: '2020-03-01T19:06:33.205Z'
@@ -53,3 +55,6 @@ patch:
         patched: '2020-03-01T19:06:33.205Z'
     - homeautomation-js-lib > winston-splunk-httplogger > splunk-logging > request > stringstream:
         patched: '2020-03-01T19:06:33.205Z'
+  'npm:ms:20170412':
+    - snyk > proxy-agent > pac-proxy-agent > get-uri > debug > ms:
+        patched: '2020-03-01T19:09:01.082Z'
