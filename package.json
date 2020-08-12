@@ -21,6 +21,5 @@
   },
   "engines": {
     "node": ">=4"
-  },
-  "snyk": true
+  }
 }
